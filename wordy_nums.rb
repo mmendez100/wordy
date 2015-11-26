@@ -12,7 +12,8 @@ class Wordy
   # .translate() takes an integer number, returns a string representing the number
   def translate(number)
     # boundary cases that require no work
-    return "zero" if number == 0
+    return "zero dollars" if number == 0
+    return "one dollar" if number == 1
     raise "Out of range, range is 0 to 999!" if number < 0 || number > 999 
     # otherwise, initialize
     @to_do = number
@@ -22,8 +23,7 @@ class Wordy
     agent(2)  # 10^2, or third digit, 
     agent(1)  # 10^1, or second digit
     agent(0)  # 10^0, i.e. ones, or single digits
-    
-    @str # return output
+    @str + " dollars"
   end # translate
   
   # .to_s() will return the last string translated, if any
@@ -88,14 +88,14 @@ class Wordy
         l.string = @@teens[l.value - 10] # an offset of 10 matches our array
       else #20 to 90 are fine!
         l.value = l.ten_powered * l.digit 
-        l.string = "#{@@tens[l.digit]} "
+        l.string = "#{@@tens[l.digit]}"
       end
     end,
     
     # for position 2, i.e. 10^2, i.e. hundreds    
     lambda do |l|
       l.value = l.ten_powered * l.digit()
-      l.string = "#{@@ones[l.digit]} hundred "
+      l.string = "#{@@ones[l.digit]} hundred"
     end
     
     # Note: to add further, add lambdas up to n, for converting 10^n 
@@ -117,7 +117,7 @@ class Wordy
     digit = @to_do / ten_powered # find values of d for d in [2..9]
     l = Lookup.new(digit, ten_powered, @to_do) 
     @@dict[power].call(l) # <<< The magic is here >>>
-    @str << l.string
+    @str == "" ? @str = l.string : @str << " " << l.string 
     @to_do -= l.value
   end #agent  
 
@@ -132,11 +132,11 @@ File.open(ARGV.first, "r") do |f|
   f.each_line do |l|
 
     # read each line 
-    print "in:  " << l.strip!
+    print "Input:  " << l.strip!
 
     # now let's do the actual work
     w = Wordy.new()
-    puts ", out: "  << w.translate(l.to_i)
+    puts ", Output: " << '"'  << w.translate(l.to_i) << '"'
       
   end #each_line
 end #File.open
